@@ -1,15 +1,31 @@
 pipeline {
-     agent any
-     stages {
-         stage('Build') {
-             steps {
-                 echo '@@@@@@@ INSIDE BUILD @@@@@@@@ ...'
+	agent  any
+	parameters {
+	   choice choices: ['development', 'staging', 'productdion'], name: 'envs'
+	}
+	stages {
+		stage('Build') {
+		   steps {
+			  echo '@@@@@@@ INSIDE BUILD @@@@@@@@ ...'
+		   }
+		   post {
+			  always {
+				 jiraSendBuildInfo site: 'kamakshee.atlassian.net'
+			  }
+		   }
+		}
+		stage("Performing deployment") {
+            steps {
+                echo "Deploying to ${params.envs} environment"
+                jiraSendDeploymentInfo (
+                    environmentId: params.envs,
+                    environmentName: params.envs,
+                    environmentType: params.envs,
+                    serviceIds: [''],
+                    site: 'joshkayjira.atlassian.net',
+                    state: 'successful'
+                )
              }
-             post {
-                 always {
-                     jiraSendBuildInfo site: 'kamakshee.atlassian.net'
-                 }
-             }
-         }
-     }
+        }
+	}
  }
