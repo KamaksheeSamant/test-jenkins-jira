@@ -14,18 +14,17 @@ pipeline {
 			  }
 		   }
 		}
-		stage("Performing deployment") {
-		    steps {
-			echo "@@@@@@@  Deploying to ${params.envs} environment @@@@@@@@ ..."
-			jiraSendDeploymentInfo (
-			    environmentId: params.envs,
-			    environmentName: params.envs,
-			    environmentType: params.envs,
-			    serviceIds: [''],
-			    site: 'kamakshee.atlassian.net',
-			    state: 'successful'
-			)
-		     }
+		stage('deploy to DEV') {
+            		when { expression { "$envName" == "DEV" } } 
+            		steps {                
+				echo "@@@@@@@  Deploying to ${params.envs} environment @@@@@@@@ ..."               
+            		}
+            		post { 
+                		always { 
+                    			// TODO this does NOT work - the JtoJ plygin does not parse out the Jira key correctly
+                    			jiraSendDeploymentInfo environmentId: params.envs, environmentName: params.envs, environmentType: params.envs, site: 'kamakshee.atlassian.net'
+                		}	 
+            		}	             
         	}
 	}
  }
