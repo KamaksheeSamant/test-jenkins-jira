@@ -15,7 +15,7 @@ pipeline {
 		   }
 		}
 		stage('deploy to DEV') {
-            		when { expression { "$params.envs" == "development" } } 
+            		when { branch: 'feature/*' } 
             		steps {                
 				echo "@@@@@@@  Deploying to ${params.envs} environment @@@@@@@@ ..."               
             		}
